@@ -1,6 +1,6 @@
 <script setup>
-import CommonEnums from '@/enums/Commons'
-import { formatDate, formatNumber, formatText } from '@/utils/Formatter'
+import CommonEnums from '@/enums/commons'
+import { formatDate, formatNumber, formatText } from '@/utils/formatter'
 import { computed } from 'vue'
 
 // Model từ khóa tìm kiếm

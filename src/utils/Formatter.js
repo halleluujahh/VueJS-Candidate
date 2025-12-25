@@ -1,4 +1,4 @@
-import { dateTimeText } from "./Constants";
+import { dateTimeText } from "./constants";
 
 /**
  * Hàm định dạng số

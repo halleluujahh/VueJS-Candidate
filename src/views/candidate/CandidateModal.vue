@@ -1,12 +1,12 @@
 <script setup>
 import MsPopup from '@/components/controller/ms-popup/MsPopup.vue'
-import CandidateHook from '@/hooks/CandidateHook'
-import { saveCandidate, getAllCandidates } from '@/services/CandidateService'
+import CandidateHook from '@/hooks/candidateHook'
+import { saveCandidate, getAllCandidates } from '@/services/candidateService'
 import FormCandidateAdd from './FormCandidateAdd.vue'
 import FormCandidateUpdate from './FormCandidateUpdate.vue'
-import * as formatter from '@/utils/Formatter.js'
+import * as formatter from '@/utils/formatter.js'
 import { ref } from 'vue'
-import { dateTimeText } from '@/utils/Constants'
+import { dateTimeText } from '@/utils/constants'
 
 import { getCurrentInstance } from 'vue'
 const { appContext } = getCurrentInstance()

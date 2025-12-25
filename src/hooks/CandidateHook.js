@@ -1,5 +1,5 @@
 
-import * as CandidateService from '@/services/CandidateService.js'
+import * as CandidateService from '@/services/candidateService.js'
 
 const CandidateHook = (service = CandidateService) => {
     const getCurrentPage = service.getCurrentPage;

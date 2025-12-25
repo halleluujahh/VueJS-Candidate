@@ -1,7 +1,7 @@
 <script setup>
 import MsInput from '@/components/controller/ms-input/MsInput.vue'
-import CommonEnums from '@/enums/Commons'
-import { dateTimeText } from '@/utils/Constants'
+import CommonEnums from '@/enums/commons'
+import { dateTimeText } from '@/utils/constants'
 import { ref, watch } from 'vue'
 
 const props = defineProps({

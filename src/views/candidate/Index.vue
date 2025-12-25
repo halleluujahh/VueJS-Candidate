@@ -1,7 +1,7 @@
 <script setup>
 import MsTable from '@/components/controller/ms-table/MsTable.vue'
-import CommonEnums from '@/enums/Commons.js'
-import CandidateHook from '@/hooks/CandidateHook.js'
+import CommonEnums from '@/enums/commons.js'
+import CandidateHook from '@/hooks/candidateHook.js'
 import { reactive, ref, watch } from 'vue'
 import CandidateModal from './CandidateModal.vue'
 

@@ -1,7 +1,7 @@
 <script setup>
 import CommonEnums from '@/enums/Commons'
 import * as formatter from '@/utils/Formatter.js'
-import { nextTick, onMounted, ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 const props = defineProps({
   id: {
     type: String,

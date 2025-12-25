@@ -202,11 +202,11 @@ function changeInputDateType(type) {
                     },
                     {
                       label: 'Nam',
-                      value: 'Nam',
+                      value: 'Male',
                     },
                     {
                       label: 'Nữ',
-                      value: 'Nữ',
+                      value: 'Female',
                     },
                   ]"
                 />
@@ -426,19 +426,6 @@ function changeInputDateType(type) {
               </div>
 
               <div class="field-container d-flex align-items-center">
-                <!-- <input
-                  oninput="formatInputTypeOnInputDayMonthYear(this)"
-                  onblur="formatInputTypeOnBlurDayMonthYear(this)"
-                  type="text"
-                  maxlength="10"
-                  role="combobox"
-                  spellcheck="false"
-                  aria-haspopup="true"
-                  class="field-input datetime-input"
-                  autocomplete="off"
-                  id="created-at"
-                  placeholder="dd/MM/yyyy"
-                /> -->
                 <MsInput
                   v-model="createdAtInput"
                   :id="'created-at'"

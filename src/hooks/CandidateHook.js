@@ -41,6 +41,9 @@ const CandidateHook = (service = CandidateService) => {
     const getCandidateByNamePhoneEmail = (searchTerm) => {
         return service.getCandidateByNamePhoneEmail(searchTerm);
     }
+    const getCandidateById = (id) => {
+        return service.getCandidateById(id);
+    }
     const saveCandidate = (candidate) => {
         return service.saveCandidate(candidate);
     }
@@ -58,7 +61,8 @@ const CandidateHook = (service = CandidateService) => {
         setCurrentPage,
         setPageSize,
         getTotalPages,
-        setTotalPages
+        setTotalPages,
+        getCandidateById
     }
 }
 

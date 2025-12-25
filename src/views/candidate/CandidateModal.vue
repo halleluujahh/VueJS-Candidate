@@ -12,26 +12,7 @@ import { getCurrentInstance } from 'vue'
 const { appContext } = getCurrentInstance()
 const toast = appContext.config.globalProperties.$toast
 
-const fullnameInput = ref('')
-const birthdateInput = ref('')
-const genderSelect = ref('')
-const regionSelect = ref('')
-const phoneInput = ref('')
-const emailInput = ref('')
-const addressInput = ref('')
-const levelSelect = ref('')
-const locationSelect = ref('')
-const majorSelect = ref('')
-const createdAtInput = ref('')
-const humanResourceSelect = ref('')
-const candidateResourceSelect = ref('')
-const partnerSelect = ref('')
-const recentWorkplaceInput = ref('')
-const workplaceInput = ref('')
-const timeFromWorkplaceInput = ref('')
-const timeToWorkplaceInput = ref('')
-const positionInput = ref('')
-const jobDescriptionInput = ref('')
+const candidateRef = ref({})
 
 const fullnameError = ref('')
 const birthdateError = ref('')
@@ -51,52 +32,91 @@ const props = defineProps({
     type: Boolean,
     default: true,
   },
+  candidateUpdate: {
+    type: Object,
+    default: () => ({}),
+  },
 })
 const emits = defineEmits(['close'])
 
 // Đóng modal thêm/cập nhật ứng viên
 function closeModalFunc() {
+  candidateRef.value.fullname = ''
+  candidateRef.value.birthdate = ''
+  candidateRef.value.gender = ''
+  candidateRef.value.region = ''
+  candidateRef.value.phoneNumber = ''
+  candidateRef.value.email = ''
+  candidateRef.value.address = ''
+  candidateRef.value.level = ''
+  candidateRef.value.location = ''
+  candidateRef.value.major = ''
+  candidateRef.value.createdAt = ''
+  candidateRef.value.humanResource = ''
+  candidateRef.value.candidateResource = ''
+  candidateRef.value.partner = ''
+  candidateRef.value.recentWorkplace = ''
+  candidateRef.value.workplace = ''
+  candidateRef.value.timeFromWorkplace = ''
+  candidateRef.value.timeToWorkplace = ''
+  candidateRef.value.position = ''
+  candidateRef.value.jobDescription = ''
+  candidateRef.value.skypeName = ''
+  candidateRef.value.skypeId = ''
+  candidateRef.value.linkFacebook = ''
+  candidateRef.value.linkZalo = ''
+  candidateRef.value.otherLink = ''
+
+  fullnameError.value = ''
+  birthdateError.value = ''
+  phoneError.value = ''
+  emailError.value = ''
+  timeToError.value = ''
+
   emits('close')
 }
 // Validate dữ liệu trong modal thêm ứng viên
 function validateAddModal() {
   // validation fields
-  if (fullnameInput.value.trim() === '') {
+  if (candidateRef.value.fullname.trim() === '') {
     fullnameError.value = 'Họ và tên không được để trống'
     return false
   } else {
     fullnameError.value = ''
   }
-  if (birthdateInput.value.trim() !== '') {
-    if (formatter.parseDDMMYYYY(birthdateInput.value) >= new Date()) {
+  if (candidateRef.value.birthdate.trim() !== '') {
+    if (formatter.parseDDMMYYYY(candidateRef.value.birthdate) >= new Date()) {
       birthdateError.value = 'Ngày sinh phải nhỏ hơn ngày hiện tại'
       return false
     } else {
       birthdateError.value = ''
     }
   }
-  if (phoneInput.value.trim() !== '') {
+  if (candidateRef.value.phoneNumber.trim() !== '') {
     const phonePattern = /^(0|\+84)[0-9]{9}$/
-    if (!phonePattern.test(phoneInput.value.trim())) {
+    if (!phonePattern.test(candidateRef.value.phoneNumber.trim())) {
       phoneError.value = 'Số điện thoại sai định dạng'
       return false
     } else {
       phoneError.value = ''
     }
   }
-  if (emailInput.value.trim() !== '') {
+  if (candidateRef.value.email.trim() !== '') {
     const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
-    if (!emailPattern.test(emailInput.value.trim())) {
+    if (!emailPattern.test(candidateRef.value.email.trim())) {
       emailError.value = 'Email sai định dạng'
       return false
     } else {
       emailError.value = ''
     }
   }
-  if (timeFromWorkplaceInput.value.trim() !== '' && timeToWorkplaceInput.value.trim() !== '') {
+  if (
+    candidateRef.value.timeFromWorkplace.trim() !== '' &&
+    candidateRef.value.timeToWorkplace.trim() !== ''
+  ) {
     if (
-      formatter.parseMMYYYY(timeFromWorkplaceInput.value) >
-      formatter.parseMMYYYY(timeToWorkplaceInput.value)
+      formatter.parseMMYYYY(candidateRef.value.timeFromWorkplace) >
+      formatter.parseMMYYYY(candidateRef.value.timeToWorkplace)
     ) {
       timeToError.value = 'Thời gian không hợp lệ'
       return false
@@ -110,31 +130,37 @@ function validateAddModal() {
 function saveCandidateFunc() {
   if (validateAddModal()) {
     saveCandidate({
-      id: getAllCandidates().length + 1,
-      fullname: fullnameInput.value,
-      birthdate: birthdateInput.value,
-      gender: genderSelect.value,
-      region: regionSelect.value,
-      phoneNumber: phoneInput.value,
-      email: emailInput.value,
-      address: addressInput.value,
-      level: levelSelect.value,
-      location: locationSelect.value,
-      major: majorSelect.value,
-      createdAt: createdAtInput.value,
-      humanResource: humanResourceSelect.value,
-      candidateResource: candidateResourceSelect.value,
-      partner: partnerSelect.value,
-      recentWorkplace: recentWorkplaceInput.value,
-      workplace: workplaceInput.value,
-      timeFromWorkplace: timeFromWorkplaceInput.value,
-      timeToWorkplace: timeToWorkplaceInput.value,
-      position: positionInput.value,
-      jobDescription: jobDescriptionInput.value,
+      id: props.isAdd ? getAllCandidates().length + 1 : props.candidateUpdate.id,
+      fullname: candidateRef.value.fullname,
+      birthdate: candidateRef.value.birthdate,
+      gender: candidateRef.value.gender,
+      region: candidateRef.value.region,
+      phoneNumber: candidateRef.value.phoneNumber,
+      email: candidateRef.value.email,
+      address: candidateRef.value.address,
+      level: candidateRef.value.level,
+      location: candidateRef.value.location,
+      major: candidateRef.value.major,
+      createdAt: candidateRef.value.createdAt,
+      humanResource: candidateRef.value.humanResource,
+      candidateResource: candidateRef.value.candidateResource,
+      partner: candidateRef.value.partner,
+      recentWorkplace: candidateRef.value.recentWorkplace,
+      workplace: candidateRef.value.workplace,
+      timeFromWorkplace: candidateRef.value.timeFromWorkplace,
+      timeToWorkplace: candidateRef.value.timeToWorkplace,
+      position: candidateRef.value.position,
+      jobDescription: candidateRef.value.jobDescription,
+      skypeName: candidateRef.value.skypeName || '',
+      skypeId: candidateRef.value.skypeId || '',
+      linkFacebook: candidateRef.value.linkFacebook || '',
+      linkZalo: candidateRef.value.linkZalo || '',
+      otherLink: candidateRef.value.otherLink || '',
     })
     isSaved.value = !isSaved.value
-    emits('close')
-    toast('success', 'Thêm ứng viên thành công')
+    closeModalFunc()
+    toast('success', props.isAdd ? 'Thêm ứng viên thành công' : 'Cập nhật ứng viên thành công')
+    candidateRef.value = {}
   }
 }
 </script>
@@ -149,36 +175,25 @@ function saveCandidateFunc() {
   >
     <template v-if="props.isAdd">
       <FormCandidateAdd
-        v-model:fullnameInput="fullnameInput"
-        v-model:birthdateInput="birthdateInput"
-        v-model:genderSelect="genderSelect"
-        v-model:regionSelect="regionSelect"
-        v-model:phoneInput="phoneInput"
-        v-model:emailInput="emailInput"
-        v-model:addressInput="addressInput"
-        v-model:levelSelect="levelSelect"
-        v-model:locationSelect="locationSelect"
-        v-model:majorSelect="majorSelect"
-        v-model:createdAtInput="createdAtInput"
-        v-model:humanResourceSelect="humanResourceSelect"
-        v-model:candidateResourceSelect="candidateResourceSelect"
-        v-model:partnerSelect="partnerSelect"
-        v-model:recentWorkplaceInput="recentWorkplaceInput"
-        v-model:workplaceInput="workplaceInput"
-        v-model:timeFromWorkplaceInput="timeFromWorkplaceInput"
-        v-model:timeToWorkplaceInput="timeToWorkplaceInput"
-        v-model:positionInput="positionInput"
-        v-model:jobDescriptionInput="jobDescriptionInput"
+        v-model:candidateRef="candidateRef"
         v-model:fullnameError="fullnameError"
         v-model:birthdateError="birthdateError"
         v-model:phoneError="phoneError"
         v-model:emailError="emailError"
         v-model:timeToError="timeToError"
-        v-model:dateTimePlaceholders="dateTimePlaceholders"
+        :candidateUpdate="props.candidateUpdate"
       />
     </template>
     <template v-else>
-      <FormCandidateUpdate />
+      <FormCandidateUpdate
+        v-model:candidateRef="candidateRef"
+        v-model:fullnameError="fullnameError"
+        v-model:birthdateError="birthdateError"
+        v-model:phoneError="phoneError"
+        v-model:emailError="emailError"
+        v-model:timeToError="timeToError"
+        :candidateUpdate="props.candidateUpdate"
+      />
     </template>
   </MsPopup>
 </template>

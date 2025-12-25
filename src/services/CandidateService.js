@@ -112,6 +112,11 @@ export const getCandidateByNamePhoneEmail = (keyword) => {
     );
 }
 
+export const getCandidateById = (id) => {
+    const candidates = getAllCandidates();
+    return candidates.find(candidate => candidate.id == id)
+}
+
 /**
  * Lưu ứng viên vào localstorage.
  * @param {Object} candidate - Đối tượng ứng viên cần lưu.
@@ -121,7 +126,7 @@ export const getCandidateByNamePhoneEmail = (keyword) => {
 export const saveCandidate = (candidate) => {
     const candidates = getAllCandidates();
 
-    const index = candidates.findIndex(c => c.id === candidate.id);
+    const index = candidates.findIndex(c => c.id == candidate.id);
     if (index !== -1) {
         candidates[index] = candidate;
     } else {

@@ -1,4 +1,59 @@
-<script setup></script>
+<script setup>
+import MsInput from '@/components/controller/ms-input/MsInput.vue'
+import CommonEnums from '@/enums/Commons'
+import { dateTimeText } from '@/utils/Constants'
+import { ref, watch } from 'vue'
+
+const props = defineProps({
+  candidateUpdate: {
+    type: Object,
+    default: () => ({}),
+  },
+})
+const candidateRef = defineModel('candidateRef', { default: {} })
+
+const fullnameError = defineModel('fullnameError', { default: '' })
+const birthdateError = defineModel('birthdateError', { default: '' })
+const phoneError = defineModel('phoneError', { default: '' })
+const emailError = defineModel('emailError', { default: '' })
+const timeToError = defineModel('timeToError', { default: '' })
+
+const dateTimePlaceholders = defineModel('dateTimePlaceholders', {
+  default: dateTimeText.datemonthyear,
+})
+
+const dateTimeTextDisplay = ref(dateTimeText.ddMMyyyy)
+const isOpenDateTimeModal = ref(false)
+
+function toggleDisplayDatetimeDropdown() {
+  isOpenDateTimeModal.value = !isOpenDateTimeModal.value
+}
+function changeInputDateType(type) {
+  if (type === 'year') {
+    dateTimePlaceholders.value = dateTimeText.year
+    dateTimeTextDisplay.value = dateTimeText.yyyy
+  }
+  if (type === 'month-year') {
+    dateTimePlaceholders.value = dateTimeText.monthyear
+    dateTimeTextDisplay.value = dateTimeText.MMyyyy
+  }
+  if (type === 'day-month-year') {
+    dateTimePlaceholders.value = dateTimeText.datemonthyear
+    dateTimeTextDisplay.value = dateTimeText.ddMMyyyy
+  }
+}
+
+watch(
+  () => props.candidateUpdate,
+  (value) => {
+    candidateRef.value = value
+  },
+  {
+    immediate: true,
+    deep: true,
+  },
+)
+</script>
 
 <template>
   <div>
@@ -17,14 +72,26 @@
           <div class="input-fullname">
             <div class="label-input">Họ và tên <span class="color-red">*</span></div>
             <div class="field-container">
-              <input
-                id="fullname-update"
-                class="field-input"
-                type="text"
-                maxlength="255"
-                placeholder="Nhập họ và tên"
+              <MsInput
+                v-model="candidateRef.fullname"
+                :id="'fullname-update'"
+                :class="'field-input'"
+                :type="'text'"
+                :maxlength="255"
+                :placeholder="'Nhập họ và tên'"
+                :formType="CommonEnums.typeFormElement.INPUT"
               />
-              <div class="error-message" id="fullname-update-error-message"></div>
+              <div
+                :class="[
+                  'error-message',
+                  {
+                    'input-error': fullnameError !== '',
+                  },
+                ]"
+                id="fullname-update-error-message"
+              >
+                {{ fullnameError }}
+              </div>
             </div>
           </div>
           <!-- Họ tên End -->
@@ -36,35 +103,41 @@
                 <div class="format-date dis-align-self-center">
                   <div
                     class="dropdown-toggle pointer d-flex align-items-center"
-                    onclick="openDateTimeModal('update')"
+                    @click="toggleDisplayDatetimeDropdown"
                   >
                     <b class="dropdown-text m-r-8" id="dropdown-text-datetime-update">
-                      Ngày tháng năm
+                      {{ dateTimeTextDisplay }}
                     </b>
                     <div class="dropdown-icon"></div>
                     <!-- dropdown datetime here -->
                     <div
                       id="display-datetime-modal-update"
-                      class="datetime-dropdown datetime-dropdown-hide"
+                      :class="[
+                        'datetime-dropdown',
+                        {
+                          'datetime-dropdown-show': isOpenDateTimeModal,
+                          'datetime-dropdown-hide': !isOpenDateTimeModal,
+                        },
+                      ]"
                     >
                       <div
                         class="dropdown-item d-flex align-items-center"
                         id="choosed-year"
-                        onclick="changeInputDateType(this, 'update')"
+                        @click="changeInputDateType('year')"
                       >
                         <div>Năm</div>
                       </div>
                       <div
                         class="dropdown-item d-flex align-items-center"
                         id="choosed-month-year"
-                        onclick="changeInputDateType(this, 'update')"
+                        @click="changeInputDateType('month-year')"
                       >
                         <div>Tháng năm</div>
                       </div>
                       <div
                         class="dropdown-item d-flex align-items-center"
                         id="choosed-day-month-year"
-                        onclick="changeInputDateType(this, 'update')"
+                        @click="changeInputDateType('day-month-year')"
                       >
                         <div>Ngày tháng năm</div>
                       </div>
@@ -73,39 +146,55 @@
                 </div>
               </div>
               <div class="field-container d-flex align-items-center">
-                <input
-                  oninput="formatInputTypeOnInput(this, 'update')"
-                  onblur="formatInputTypeOnBlur(this, 'update')"
-                  type="text"
-                  maxlength="10"
-                  role="combobox"
-                  spellcheck="false"
-                  aria-haspopup="true"
-                  autocomplete="off"
-                  id="birthdate-update"
-                  placeholder="dd/MM/yyyy"
-                  class="datetime-input"
+                <MsInput
+                  v-model="candidateRef.birthdate"
+                  :id="'birthdate-update'"
+                  :class="'datetime-input'"
+                  :type="'text'"
+                  :placeholder="dateTimePlaceholders"
+                  :formType="CommonEnums.typeFormElement.DATEPICKER"
+                  :autocomplete="'off'"
                 />
                 <div id="calendar" class="calendar-setting pointer">
                   <div class="icon-calendar-vertical"></div>
                 </div>
                 <input type="date" id="realDate-update" hidden />
               </div>
-              <div class="error-message" id="birthdate-update-error-message"></div>
+              <div
+                :class="[
+                  'error-message',
+                  {
+                    'input-error': birthdateError !== '',
+                  },
+                ]"
+                id="birthdate-update-error-message"
+              >
+                {{ birthdateError }}
+              </div>
             </div>
             <div class="dup-row">
               <div class="label-input">Giới tính</div>
               <div class="field-container">
-                <select
-                  class="field-input"
-                  type="text"
-                  placeholder="Chọn giới tính"
-                  id="gender-update"
-                >
-                  <option value="">Chọn giới tính</option>
-                  <option value="Male">Nam</option>
-                  <option value="Female">Nữ</option>
-                </select>
+                <MsInput
+                  v-model="candidateRef.gender"
+                  :id="'gender-update'"
+                  :formType="CommonEnums.typeFormElement.SELECT"
+                  :class="'field-input'"
+                  :options="[
+                    {
+                      label: 'Chọn giới tính',
+                      value: '',
+                    },
+                    {
+                      label: 'Nam',
+                      value: 'Male',
+                    },
+                    {
+                      label: 'Nữ',
+                      value: 'Female',
+                    },
+                  ]"
+                />
                 <div class="error-message" id="gender-error-message"></div>
               </div>
             </div>
@@ -116,17 +205,50 @@
             <div class="dup-row">
               <div class="label-input">Nguồn ứng viên</div>
               <div class="field-container">
-                <select class="field-input" type="text" id="candidate-resource-update">
-                  <option value="">Chọn nguồn ứng viên</option>
-                  <option value="Group tuyển dụng">Group tuyển dụng</option>
-                  <option value="Hội chợ việc làm">Hội chợ việc làm</option>
-                  <option value="Website">Website</option>
-                  <option value="Facebook">Facebook</option>
-                  <option value="Zalo">Zalo</option>
-                  <option value="CareerViet">CareerViet</option>
-                  <option value="LinkedIn">LinkedIn</option>
-                  <option value="Careerlink">Careerlink</option>
-                </select>
+                <MsInput
+                  v-model="candidateRef.candidateResource"
+                  :id="'candidate-resource-update'"
+                  :class="'field-input'"
+                  :formType="CommonEnums.typeFormElement.SELECT"
+                  :options="[
+                    {
+                      label: 'Chọn nguồn ứng viên',
+                      value: '',
+                    },
+                    {
+                      label: 'Group tuyển dụng',
+                      value: 'Group tuyển dụng',
+                    },
+                    {
+                      label: 'Hội chợ việc làm',
+                      value: 'Hội chợ việc làm',
+                    },
+                    {
+                      label: 'Website',
+                      value: 'Website',
+                    },
+                    {
+                      label: 'Facebook',
+                      value: 'Facebook',
+                    },
+                    {
+                      label: 'Zalo',
+                      value: 'Zalo',
+                    },
+                    {
+                      label: 'CareerViet',
+                      value: 'CareerViet',
+                    },
+                    {
+                      label: 'LinkedIn',
+                      value: 'LinkedIn',
+                    },
+                    {
+                      label: 'Careerlink',
+                      value: 'Careerlink',
+                    },
+                  ]"
+                />
                 <div class="error-message" id="candidate-resource-error-message"></div>
               </div>
             </div>
@@ -136,19 +258,17 @@
               </div>
 
               <div class="field-container d-flex align-items-center">
-                <input
-                  oninput="formatInputTypeOnInputDayMonthYear(this)"
-                  onblur="formatInputTypeOnBlurDayMonthYear(this)"
-                  type="text"
-                  maxlength="10"
-                  role="combobox"
-                  spellcheck="false"
-                  aria-haspopup="true"
-                  class="field-input datetime-input"
-                  autocomplete="off"
-                  id="created-at-update"
-                  placeholder="dd/MM/yyyy"
+                <MsInput
+                  v-model="candidateRef.createdAt"
+                  :id="'created-at-update'"
+                  :type="'text'"
+                  :maxlength="10"
+                  :autocomplete="'off'"
+                  :placeholder="dateTimeText.datemonthyear"
+                  :class="'field-input datetime-input'"
+                  :formType="CommonEnums.typeFormElement.DATEPICKER"
                 />
+
                 <div id="calendar" class="calendar-setting pointer">
                   <div class="icon-calendar-vertical"></div>
                 </div>
@@ -161,14 +281,39 @@
           <div class="input-area">
             <div class="label-input">Khu vực</div>
             <div class="field-container d-flex align-items-center">
-              <select id="region-update" class="field-input" placeholder="Khu vực">
-                <option value="">Chọn khu vực</option>
-                <option value="Cầu Giấy">Cầu Giấy</option>
-                <option value="Tây Hồ">Tây Hồ</option>
-                <option value="Thanh Xuân">Thanh Xuân</option>
-                <option value="Gia Lâm">Gia Lâm</option>
-                <option value="Bắc Từ Liêm">Bắc Từ Liêm</option>
-              </select>
+              <MsInput
+                v-model="candidateRef.region"
+                :id="'region-update'"
+                :class="'field-input'"
+                :placeholder="'Khu vực'"
+                :formType="CommonEnums.typeFormElement.SELECT"
+                :options="[
+                  {
+                    label: 'Chọn khu vực',
+                    value: '',
+                  },
+                  {
+                    label: 'Cầu Giấy',
+                    value: 'Cầu Giấy',
+                  },
+                  {
+                    label: 'Tây Hồ',
+                    value: 'Tây Hồ',
+                  },
+                  {
+                    label: 'Thanh Xuân',
+                    value: 'Thanh Xuân',
+                  },
+                  {
+                    label: 'Gia Lâm',
+                    value: 'Gia Lâm',
+                  },
+                  {
+                    label: 'Bắc Từ Liêm',
+                    value: 'Bắc Từ Liêm',
+                  },
+                ]"
+              />
               <div class="dictionary-setting pointer">
                 <div class="icon-more-vertical"></div>
               </div>
@@ -180,23 +325,59 @@
             <div>Nhân sự khai thác</div>
           </div>
           <div class="field-container">
-            <select class="field-input" type="text" id="human-resource-update">
-              <option value="">Chọn nhân sự khai thác</option>
-              <option value="Dinh Nga QTHT">Dinh Nga QTHT</option>
-              <option value="Lương Nguyễn">Lương Nguyễn</option>
-              <option value="Nguyễn Lan Hương">Nguyễn Lan Hương</option>
-              <option value="Nguyễn Văn Công">Nguyễn Văn Công</option>
-              <option value="Nguyễn Thành Chung">Nguyễn Thành Chung</option>
-            </select>
+            <MsInput
+              v-model="candidateRef.humanResource"
+              :id="'human-resource-update'"
+              :class="'field-input'"
+              :formType="CommonEnums.typeFormElement.SELECT"
+              :options="[
+                {
+                  label: 'Chọn nhân sự khai thác',
+                  value: '',
+                },
+                {
+                  label: 'Dinh Nga QTHT',
+                  value: 'Dinh Nga QTHT',
+                },
+                {
+                  label: 'Lương Nguyễn',
+                  value: 'Lương Nguyễn',
+                },
+                {
+                  label: 'Nguyễn Lan Hương',
+                  value: 'Nguyễn Lan Hương',
+                },
+                {
+                  label: 'Nguyễn Văn Công',
+                  value: 'Nguyễn Văn Công',
+                },
+                {
+                  label: 'Nguyễn Thành Chung',
+                  value: 'Nguyễn Thành Chung',
+                },
+              ]"
+            />
             <div class="error-message" id="human-resource-error-message"></div>
           </div>
 
           <div class="label-input">Cộng tác viên</div>
           <div class="field-container">
-            <select class="field-input" type="text" id="partner-update">
-              <option value="">Chọn cộng tác viên</option>
-              <option value="Tuyển dụng Misa">Tuyển dụng Misa</option>
-            </select>
+            <MsInput
+              v-model="candidateRef.partner"
+              :id="'partner-update'"
+              :class="'field-input'"
+              :formType="CommonEnums.typeFormElement.SELECT"
+              :options="[
+                {
+                  label: 'Chọn cộng tác viên',
+                  value: '',
+                },
+                {
+                  label: 'Tuyển dụng Misa',
+                  value: 'Tuyển dụng Misa',
+                },
+              ]"
+            />
             <div class="error-message" id="partner-error-message"></div>
           </div>
           <div class="d-flex align-items-center pointer mb-2">
@@ -217,12 +398,29 @@
         </div>
 
         <div class="field-container">
-          <input type="text" class="field-input" id="phone-update" />
+          <MsInput
+            v-model="candidateRef.phoneNumber"
+            :id="'phone-update'"
+            :placeholder="'Nhập số điện thoại'"
+            :class="'field-input'"
+            :type="'text'"
+            :formType="CommonEnums.typeFormElement.INPUT"
+          />
         </div>
       </div>
       <div class="row-input">
         <div class="label-input d-flex align-items-center"></div>
-        <div class="error-message" id="phone-update-error-message"></div>
+        <div
+          :class="[
+            'error-message',
+            {
+              'input-error': phoneError !== '',
+            },
+          ]"
+          id="phone-update-error-message"
+        >
+          {{ phoneError }}
+        </div>
       </div>
       <div class="row-input">
         <div class="label-input d-flex align-items-center"></div>
@@ -237,12 +435,29 @@
           <div class="contact-field">Email</div>
         </div>
         <div class="field-container">
-          <input class="field-input" type="email" id="email-update" />
+          <MsInput
+            v-model="candidateRef.email"
+            :id="'email-update'"
+            :placeholder="'Nhập email'"
+            :class="'field-input'"
+            :type="'email'"
+            :formType="CommonEnums.typeFormElement.INPUT"
+          />
         </div>
       </div>
       <div class="row-input">
         <div class="label-input d-flex align-items-center"></div>
-        <div class="error-message" id="email-update-error-message"></div>
+        <div
+          :class="[
+            'error-message',
+            {
+              'input-error': emailError !== '',
+            },
+          ]"
+          id="email-update-error-message"
+        >
+          {{ emailError }}
+        </div>
       </div>
       <div class="row-input">
         <div class="label-input d-flex align-items-center"></div>
@@ -258,7 +473,14 @@
           <div class="contact-field">Địa chỉ</div>
         </div>
         <div class="field-container">
-          <input type="text" class="field-input" id="address-update" />
+          <MsInput
+            v-model="candidateRef.address"
+            :id="'address-update'"
+            :type="'text'"
+            :class="'field-input'"
+            :placeholder="'Nhập địa chỉ'"
+            :formType="CommonEnums.typeFormElement.INPUT"
+          />
         </div>
       </div>
       <div class="input-address row-input">
@@ -271,8 +493,22 @@
           <div class="contact-field">Skype</div>
         </div>
         <div class="field-container d-flex gap3">
-          <input type="text" placeholder="Tên hiển thị" class="field-input" id="skype-name" />
-          <input type="text" class="field-input" id="skype-id" placeholder="live:" />
+          <MsInput
+            v-model="candidateRef.skypeName"
+            :id="'skype-name'"
+            :type="'text'"
+            :formType="CommonEnums.typeFormElement.INPUT"
+            :placeholder="'Tên hiển thị'"
+            :class="'field-input'"
+          />
+          <MsInput
+            v-model="candidateRef.skypeId"
+            :id="'skype-id'"
+            :type="'text'"
+            :formType="CommonEnums.typeFormElement.INPUT"
+            :placeholder="'live:'"
+            :class="'field-input'"
+          />
         </div>
       </div>
       <div class="row-input">
@@ -285,7 +521,12 @@
           <div class="contact-field">Facebook</div>
         </div>
         <div class="field-container">
-          <input type="text" class="field-input" id="link-facebook" />
+          <MsInput
+            v-model="candidateRef.linkFacebook"
+            :id="'link-facebook'"
+            :class="'field-input'"
+            :type="'text'"
+          />
         </div>
       </div>
       <div class="row-input">
@@ -298,7 +539,12 @@
           <div class="contact-field">Zalo</div>
         </div>
         <div class="field-container">
-          <input type="text" class="field-input" id="link-zalo" />
+          <MsInput
+            v-model="candidateRef.linkZalo"
+            :id="'link-zalo'"
+            :class="'field-input'"
+            :type="'text'"
+          />
         </div>
       </div>
       <div class="row-input">
@@ -311,7 +557,12 @@
           <div class="contact-field">Liên kết khác</div>
         </div>
         <div class="field-container">
-          <input type="text" class="field-input" id="other-link" />
+          <MsInput
+            v-model="candidateRef.otherLink"
+            :id="'other-link'"
+            :class="'field-input'"
+            :type="'text'"
+          />
         </div>
       </div>
       <div class="row-input">
@@ -336,12 +587,14 @@
                 <div class="contact-field">Trình độ đào tạo</div>
               </div>
               <div class="field-container d-flex pos-relative align-items-center">
-                <input
-                  id="level-update"
-                  type="text"
-                  class="field-input"
-                  maxlength="255"
-                  placeholder="Nhập trình độ đào tạo"
+                <MsInput
+                  v-model="candidateRef.level"
+                  :id="'level-update'"
+                  :class="'field-input'"
+                  :type="'text'"
+                  :maxlength="255"
+                  :placeholder="'Nhập trình độ đào tạo'"
+                  :formType="CommonEnums.typeFormElement.INPUT"
                 />
                 <span class="icon-plus plus-input"></span>
                 <div class="arrow-setting pointer">
@@ -362,12 +615,14 @@
                 <div class="contact-field">Nơi đào tạo</div>
               </div>
               <div class="field-container d-flex pos-relative align-items-center">
-                <input
-                  id="location-update"
-                  class="field-input"
-                  type="text"
-                  maxlength="255"
-                  placeholder="Nhập nơi đào tạo"
+                <MsInput
+                  v-model="candidateRef.location"
+                  :id="'location-update'"
+                  :class="'field-input'"
+                  :type="'text'"
+                  :maxlength="255"
+                  :placeholder="'Nhập nơi đào tạo'"
+                  :formType="CommonEnums.typeFormElement.INPUT"
                 />
                 <span class="icon-plus plus-input"></span>
                 <div class="arrow-setting pointer">
@@ -387,12 +642,14 @@
                 <div class="contact-field">Chuyên ngành</div>
               </div>
               <div class="field-container d-flex pos-relative align-items-center">
-                <input
-                  id="major-update"
-                  class="field-input"
-                  type="text"
-                  maxlength="255"
-                  placeholder="Nhập chuyên ngành"
+                <MsInput
+                  v-model="candidateRef.major"
+                  :id="'major-update'"
+                  :class="'field-input'"
+                  :type="'text'"
+                  :maxlength="255"
+                  :placeholder="'Nhập chuyên ngành'"
+                  :formType="CommonEnums.typeFormElement.INPUT"
                 />
                 <span class="icon-plus plus-input"></span>
                 <div class="arrow-setting pointer">
@@ -423,12 +680,14 @@
           <div class="contact-field">Nơi làm việc gần đây</div>
         </div>
         <div class="field-container">
-          <input
-            class="field-input"
-            type="text"
-            maxlength="255"
-            placeholder="Nhập nơi làm việc gần đây"
-            id="recent-workplace-update"
+          <MsInput
+            v-model="candidateRef.recentWorkplace"
+            :id="'recent-workplace-update'"
+            :class="'field-input'"
+            :type="'text'"
+            :maxlength="255"
+            :placeholder="'Nhập nơi làm việc gần đây'"
+            :formType="CommonEnums.typeFormElement.INPUT"
           />
         </div>
       </div>
@@ -448,12 +707,14 @@
           <div class="contact-field">Nơi làm việc</div>
         </div>
         <div class="field-container">
-          <input
-            class="field-input"
-            type="text"
-            maxlength="255"
-            placeholder="Nhập nơi làm việc"
-            id="workplace-update"
+          <MsInput
+            v-model="candidateRef.workplace"
+            :id="'workplace-update'"
+            :class="'field-input'"
+            :type="'text'"
+            :maxlength="255"
+            :placeholder="'Nhập nơi làm việc'"
+            :formType="CommonEnums.typeFormElement.INPUT"
           />
         </div>
       </div>
@@ -466,18 +727,15 @@
         </div>
         <div class="d-flex align-items-center gap3">
           <div class="field-container d-flex align-items-center">
-            <input
-              oninput="formatInputTypeOnInputMonthYear(this)"
-              onblur="formatInputTypeOnBlurMonthYear(this)"
-              type="text"
-              maxlength="10"
-              role="combobox"
-              spellcheck="false"
-              aria-haspopup="true"
-              class="field-input datetime-input"
-              autocomplete="off"
-              id="time-from-update"
-              placeholder="MM/yyyy"
+            <MsInput
+              v-model="candidateRef.timeFromWorkplace"
+              :id="'time-from-update'"
+              :type="'text'"
+              :maxlength="10"
+              :autocomplete="'off'"
+              :placeholder="dateTimeText.monthyear"
+              :class="'field-input datetime-input'"
+              :formType="CommonEnums.typeFormElement.DATEPICKER"
             />
             <div id="calendar" class="calendar-setting pointer">
               <div class="icon-calendar-vertical"></div>
@@ -487,18 +745,15 @@
           <div class="d-flex align-items-center fs-20">-</div>
 
           <div class="field-container d-flex align-items-center">
-            <input
-              oninput="formatInputTypeOnInputMonthYear(this)"
-              onblur="formatInputTypeOnBlurMonthYear(this)"
-              type="text"
-              maxlength="10"
-              role="combobox"
-              spellcheck="false"
-              aria-haspopup="true"
-              class="field-input datetime-input"
-              autocomplete="off"
-              id="time-to-update"
-              placeholder="MM/yyyy"
+            <MsInput
+              v-model="candidateRef.timeToWorkplace"
+              :id="'time-to-update'"
+              :type="'text'"
+              :maxlength="10"
+              :autocomplete="'off'"
+              :placeholder="dateTimeText.monthyear"
+              :class="'field-input datetime-input'"
+              :formType="CommonEnums.typeFormElement.DATEPICKER"
             />
             <div id="calendar" class="calendar-setting pointer">
               <div class="icon-calendar-vertical"></div>
@@ -516,12 +771,14 @@
           <div class="contact-field">Vị trí công việc</div>
         </div>
         <div class="field-container">
-          <input
-            class="field-input"
-            type="text"
-            maxlength="255"
-            placeholder="Nhập vị trí công việc"
-            id="position-update"
+          <MsInput
+            v-model="candidateRef.position"
+            :id="'position-update'"
+            :type="'text'"
+            :class="'field-input'"
+            :maxlength="255"
+            :placeholder="'Nhập vị trí công việc'"
+            :formType="CommonEnums.typeFormElement.INPUT"
           />
         </div>
       </div>
@@ -533,12 +790,12 @@
           <div class="contact-field">Mô tả công việc</div>
         </div>
         <div class="field-container">
-          <textarea
-            id="job-description-update"
-            type="text"
-            placeholder="Nhập mô tả công việc"
-            oninput="autoHeight(this)"
-          ></textarea>
+          <MsInput
+            v-model="candidateRef.jobDescription"
+            :id="'job-description-update'"
+            :placeholder="'Nhập mô tả công việc'"
+            :formType="CommonEnums.typeFormElement.TEXTAREA"
+          />
           <div class="error-message" id="job-description-error-message"></div>
         </div>
       </div>

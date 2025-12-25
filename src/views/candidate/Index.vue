@@ -135,7 +135,10 @@ const {
   setPageSize,
   getTotalPages,
   setTotalPages,
+  getCandidateById,
 } = CandidateHook()
+
+const candidateUpdate = ref(null)
 
 // Define table body for candidate table
 const candidateTableBody = reactive(getAllCandidatesPagination())
@@ -233,9 +236,10 @@ function openAddCandidateModal() {
 function closeCandidateModal() {
   isModalOpen.value = false
 }
-function openUpdateCandidateModal() {
+function openUpdateCandidateModal(id) {
   isAdd.value = false
   isModalOpen.value = true
+  candidateUpdate.value = getCandidateById(id)
 }
 
 watch(isSaved, () => {
@@ -313,6 +317,7 @@ watch(isSaved, () => {
       :isAdd="isAdd"
       :isModalOpen="isModalOpen"
       @close="closeCandidateModal"
+      :candidateUpdate="candidateUpdate"
     />
   </div>
 </template>
